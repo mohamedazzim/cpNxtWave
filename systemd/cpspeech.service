@@ -1,0 +1,27 @@
+[Unit]
+Description=CpSpech V2 - Speech Recognition System
+After=network.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/CpSpech
+Environment="PATH=/home/pi/CpSpech/venv/bin"
+ExecStart=/home/pi/CpSpech/venv/bin/python /home/pi/CpSpech/main.py
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits
+MemoryLimit=1G
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target
