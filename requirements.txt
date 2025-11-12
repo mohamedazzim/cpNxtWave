@@ -12,3 +12,24 @@ pygame==2.5.2
 pyttsx3==2.90
 onnx==1.16.0
 onnxruntime==1.18.0
+torch
+torchaudio
+transformers==4.41.2
+librosa==0.10.2
+soundfile==0.12.1
+PyYAML==6.0.2
+pyaudio==0.2.14
+pygame==2.5.2
+pyttsx3==2.90
+onnx==1.16.0
+onnxruntime==1.18.0
+
+# NEW DEPENDENCIES FOR HYBRID SYSTEM
+openai>=1.3.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+RPi.GPIO>=0.7.1
+smbus2>=0.4.2
+adafruit-circuitpython-ssd1306>=2.12.9
+flask>=3.0.0
+
