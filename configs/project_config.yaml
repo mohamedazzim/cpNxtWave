@@ -1,0 +1,67 @@
+# CpSpech V2 - Project Configuration
+
+project:
+  name: "CP Speech Recognition System"
+  version: "2.0.0"
+  description: "Hybrid offline ASR + OpenAI TTS for children with cerebral palsy"
+
+device:
+  name: "CpSpeech Assistant"
+  type: "raspberry_pi_4"  # or "laptop" or "jetson_nano"
+  
+audio:
+  sample_rate: 16000
+  channels: 1
+  record_seconds: 3
+  chunk_size: 1024
+  format: "int16"
+  
+model:
+  checkpoint_path: "models/best_model.pth"
+  manifest_path: "manifests/train_manifest.json"
+  architecture: "wav2vec2"
+  pretrained_model: "facebook/wav2vec2-base"
+  
+recognition:
+  confidence_threshold: 0.5
+  enable_speaker_adaptation: false
+  
+tts:
+  provider: "hybrid"  # "openai", "pyttsx3", or "hybrid"
+  openai:
+    model: "tts-1"  # "tts-1" or "tts-1-hd"
+    voice: "nova"   # alloy, echo, fable, onyx, nova, shimmer
+  pyttsx3:
+    rate: 160
+    volume: 1.0
+  fallback_enabled: true
+  
+network:
+  timeout: 5
+  api_base_url: "https://api.openai.com"
+  check_interval: 30  # seconds between connectivity checks
+  ap_mode:
+    ssid: "CpSpeech-Setup"
+    password: "setup123"
+    channel: 6
+  
+hardware:
+  enable_gpio: true
+  button_pin: 17
+  led_status_pin: 27
+  led_recording_pin: 22
+  i2c_enabled: true
+  oled_display: true
+  oled_address: "0x3C"
+  
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_to_file: true
+  log_file: "logs/system.log"
+  max_log_size_mb: 10
+  
+performance:
+  batch_size: 8
+  num_workers: 2
+  device_type: "cpu"  # "cpu", "cuda", "mps"
+  enable_optimization: true
