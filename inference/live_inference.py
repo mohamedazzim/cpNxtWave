@@ -235,3 +235,116 @@ class LiveSpeechRecognizer:
                 
             finally:
                 # Clean up temporary file
+                            # Clean up temporary file
+                if os.path.exists(temp_wav_path):
+                    try:
+                        os.remove(temp_wav_path)
+                    except:
+                        pass
+        
+        # Summary
+        print("\n" + "="*50)
+        print(f"  SUMMARY: {successful_predictions}/{repeat} successful predictions")
+        print("="*50 + "\n")
+
+
+def main():
+    """Main entry point"""
+    parser = argparse.ArgumentParser(
+        description="Live Speech Phrase Recognition with Hybrid TTS",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Run once with TTS
+  python inference/live_inference.py --model_ckpt models/best_model.pth --manifest_json manifests/train_manifest.json --speak
+
+  # Run 5 times without TTS
+  python inference/live_inference.py --model_ckpt models/best_model.pth --manifest_json manifests/train_manifest.json --repeat 5
+
+  # Custom confidence threshold
+  python inference/live_inference.py --model_ckpt models/best_model.pth --manifest_json manifests/train_manifest.json --speak --confidence 0.7
+        """
+    )
+    
+    parser.add_argument(
+        "--model_ckpt",
+        type=str,
+        required=True,
+        help="Path to model checkpoint (.pth)"
+    )
+    parser.add_argument(
+        "--manifest_json",
+        type=str,
+        required=True,
+        help="Path to manifest JSON file"
+    )
+    parser.add_argument(
+        "--speak",
+        action="store_true",
+        help="Enable text-to-speech output"
+    )
+    parser.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Number of live predictions to run (default: 1)"
+    )
+    parser.add_argument(
+        "--confidence",
+        type=float,
+        default=0.5,
+        help="Minimum confidence threshold (0.0-1.0, default: 0.5)"
+    )
+    parser.add_argument(
+        "--duration",
+        type=int,
+        default=3,
+        help="Recording duration in seconds (default: 3)"
+    )
+    
+    args = parser.parse_args()
+    
+    # Validate arguments
+    if not os.path.exists(args.model_ckpt):
+        print(f"[ERROR] Model checkpoint not found: {args.model_ckpt}")
+        sys.exit(1)
+    
+    if not os.path.exists(args.manifest_json):
+        print(f"[ERROR] Manifest file not found: {args.manifest_json}")
+        sys.exit(1)
+    
+    if not 0.0 <= args.confidence <= 1.0:
+        print(f"[ERROR] Confidence must be between 0.0 and 1.0")
+        sys.exit(1)
+    
+    # Update global recording duration if specified
+    global RECORD_SECONDS
+    RECORD_SECONDS = args.duration
+    
+    try:
+        # Initialize recognizer
+        recognizer = LiveSpeechRecognizer(
+            model_ckpt=args.model_ckpt,
+            manifest_json=args.manifest_json,
+            use_tts=args.speak
+        )
+        
+        # Run inference
+        recognizer.run_inference(
+            repeat=args.repeat,
+            confidence_threshold=args.confidence
+        )
+        
+    except KeyboardInterrupt:
+        print("\n\n[INFO] Interrupted by user. Exiting...")
+        sys.exit(0)
+    except Exception as e:
+        print(f"\n[ERROR] Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+
